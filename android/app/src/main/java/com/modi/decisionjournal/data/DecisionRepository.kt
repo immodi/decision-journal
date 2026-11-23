@@ -122,6 +122,22 @@ class DecisionRepository(private val uid: String) {
         collection.document(id).delete().await()
     }
 
+    /** Open decisions whose review date has passed; used by the daily reminder. */
+    suspend fun dueCount(): Int {
+        // Filter locally instead of composing an indexed query: the dataset is
+        // small, and it keeps the reminder working if an index is missing.
+        val now = System.currentTimeMillis()
+        return collection
+            .whereEqualTo("status", "open")
+            .get()
+            .await()
+            .documents
+            .count { document ->
+                val reviewDate = document.getTimestamp("reviewDate") ?: return@count false
+                reviewDate.toDate().time <= now
+            }
+    }
+
     suspend fun loadPreferences(): Preferences {
         val snapshot = settingsDocument.get().await()
         return snapshot.toObject(Preferences::class.java) ?: Preferences()

@@ -1,12 +1,14 @@
 package com.modi.decisionjournal.reminders
 
 import android.content.Context
+import android.util.Log
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
-import com.google.firebase.Timestamp
-import com.google.firebase.firestore.FirebaseFirestore
-import com.modi.decisionjournal.data.currentUid
-import kotlinx.coroutines.tasks.await
+import com.google.firebase.auth.FirebaseAuth
+import com.modi.decisionjournal.data.Repositories
+import kotlinx.coroutines.suspendCancellableCoroutine
+import kotlinx.coroutines.withTimeoutOrNull
+import kotlin.coroutines.resume
 
 /**
  * Once a day, counts open decisions that are due and posts one notification.
@@ -18,22 +20,41 @@ class ReviewReminderWorker(
 ) : CoroutineWorker(context, params) {
 
     override suspend fun doWork(): Result {
-        val uid = currentUid() ?: return Result.success()
+        // The worker can run in a fresh process, before Firebase has restored the
+        // saved session. Waiting for the first auth callback avoids a silent no-op.
+        val uid = awaitUid() ?: return Result.success()
 
         return try {
-            val due = FirebaseFirestore.getInstance()
-                .collection("users").document(uid).collection("decisions")
-                .whereEqualTo("status", "open")
-                .whereLessThanOrEqualTo("reviewDate", Timestamp.now())
-                .get()
-                .await()
-
-            if (due.size() > 0) {
-                NotificationHelper.showDueNotification(applicationContext, due.size())
+            val due = Repositories.decisions(uid).dueCount()
+            Log.i(javaClass.simpleName, "Due decisions: $due")
+            if (due > 0) {
+                NotificationHelper.showDueNotification(applicationContext, due)
             }
             Result.success()
         } catch (error: Exception) {
+            Log.e(javaClass.simpleName, "Reminder check failed", error)
             Result.retry()
+        }
+    }
+
+    private suspend fun awaitUid(): String? {
+        val auth = FirebaseAuth.getInstance()
+        auth.currentUser?.uid?.let { return it }
+
+        return withTimeoutOrNull(15_000) {
+            suspendCancellableCoroutine { continuation ->
+                var listener: FirebaseAuth.AuthStateListener? = null
+                listener = FirebaseAuth.AuthStateListener { firebaseAuth ->
+                    listener?.let(firebaseAuth::removeAuthStateListener)
+                    if (continuation.isActive) {
+                        continuation.resume(firebaseAuth.currentUser?.uid)
+                    }
+                }
+                auth.addAuthStateListener(listener)
+                continuation.invokeOnCancellation {
+                    listener?.let(auth::removeAuthStateListener)
+                }
+            }
         }
     }
 }

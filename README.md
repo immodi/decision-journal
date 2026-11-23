@@ -9,7 +9,7 @@ The full build specification lives in [`docs/Spec.md`](docs/Spec.md).
 ## Layout
 
 - `firebase/` — Firestore rules, indexes, emulator tests, deploy config
-- `web/` — React + TypeScript client (Vite)
+- `web/` — React + TypeScript client (Vite, Tailwind CSS)
 - `android/` — Kotlin app (built in Docker, installed from the host)
 
 ## Firebase

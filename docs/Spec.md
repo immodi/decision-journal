@@ -23,7 +23,7 @@ Design principles:
 
 - **Backend:** Firebase Authentication and Cloud Firestore on the free (Spark) plan. No custom server and no Cloud Functions in v1.
 - **Android:** Kotlin, minimum SDK 24, Material Components, ViewBinding, ViewModel with LiveData, coroutines for the Firebase calls, Firebase Android SDK (via the Firebase BoM and the Kotlin extensions), Credential Manager for the optional Google sign-in, WorkManager for reminders.
-- **Web:** React with Vite and TypeScript, React Router, Firebase JS SDK (modular API), and any lightweight charting library (for example Recharts).
+- **Web:** React with Vite and TypeScript, Tailwind CSS, React Router, Firebase JS SDK (modular API), and any lightweight charting library (for example Recharts).
 
 Both clients talk directly to Firebase. That means the Firestore security rules in section 5 are the only thing protecting the data, so they must be written and deployed before any real entries are stored.
 
@@ -241,7 +241,7 @@ Use one repository with three top-level folders:
 
 **Android layout.** Packages for `ui` (activities and fragments), `data` (the `Decision` model and a repository wrapping Firestore and exposing LiveData), and `reminders` (the WorkManager worker). The `Decision` model is a plain Kotlin data class with a public no-argument constructor and writable properties so Firestore can map it, with `@ServerTimestamp` on the server-set fields.
 
-**Web layout.** `src/firebase.ts` for initialisation, `src/hooks/useDecisions.tsx` for the data hook and its provider, `src/types.ts` for the shared `Decision` and `Review` types, `src/pages/` for screens, and `src/components/` for shared pieces. Run `npm run typecheck` before deploying.
+**Web layout.** `src/firebase.ts` for initialisation, `src/hooks/useDecisions.tsx` for the data hook and its provider, `src/types.ts` for the shared `Decision` and `Review` types, `src/pages/` for screens, and `src/components/` for shared pieces. Tailwind is configured through `vite.config.ts` and `src/index.css`; shared utility classes live in `src/components/ui.ts`. Run `npm run typecheck` before deploying.
 
 **Indexes.** Queries that filter by `status` and order by `reviewDate` need a composite index. Define it in `firestore.indexes.json` rather than creating it by hand.
 

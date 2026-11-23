@@ -126,22 +126,27 @@ docker run --rm -v "$PWD:/project" -v decisionjournal-gradle:/root/.gradle \
 
 The APK lands in `android/app/build/outputs/apk/release/`.
 
-CI publishes on any `v*` tag (`.github/workflows/android-release.yml`). It
-needs four repository secrets, uploaded once with an authenticated `gh`:
+CI publishes signed releases from `.github/workflows/android-release.yml`,
+either on a `v*` tag or from the Actions tab (Run workflow, with a version).
+
+One-time setup, with an authenticated GitHub CLI:
 
 ```bash
+gh auth login
 ./scripts/ci-secrets.sh
 ```
 
-Then:
+Then publish:
 
 ```bash
-git tag v0.1.0
-git push origin main --tags
+./scripts/publish-release.sh 0.1.0
 ```
 
-The workflow builds the APK with the tag as `versionName`, uploads it as an
-artifact, and attaches it to a GitHub Release.
+That uploads any missing secrets, pushes `main`, starts the workflow and
+watches it. Without the script: Actions → Android release → Run workflow →
+version `0.1.0`. The workflow creates or updates the matching `v*` tag and
+attaches the APK to the GitHub Release. Without the four signing secrets it
+fails on purpose rather than publishing an unsigned build.
 
 ## Behaviour worth remembering
 

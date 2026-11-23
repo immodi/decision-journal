@@ -108,10 +108,20 @@ class SettingsFragment : Fragment() {
 
     private fun updateNotificationStatus() {
         val enabled = NotificationHelper.notificationsEnabled(requireContext())
-        binding.notificationStatus.text = if (enabled) {
+        val status = if (enabled) {
             getString(R.string.notify_status_on, reminderTime)
         } else {
             getString(R.string.notify_status_off)
+        }
+        val last = ReminderScheduler.lastCheck(requireContext())
+        binding.notificationStatus.text = if (last == null) {
+            status
+        } else {
+            status + "\n" + getString(
+                R.string.last_check,
+                ReviewDates.format(java.util.Date(last.first)),
+                last.second,
+            )
         }
         binding.testNotificationButton.setText(
             if (enabled) R.string.test_notification else R.string.open_notification_settings,

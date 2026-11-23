@@ -152,6 +152,7 @@
     <string name="test_sent">Test notification sent.</string>
     <string name="test_sent_none">Test sent. Nothing is due right now.</string>
     <string name="test_sent_due">Test sent. %1$d due.</string>
+    <string name="last_check">Last check: %1$s · %2$d due.</string>
     <plurals name="reminder_due">
         <item quantity="one">%d decision is ready for review</item>
         <item quantity="other">%d decisions are ready for review</item>

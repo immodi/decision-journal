@@ -156,3 +156,7 @@ fails on purpose rather than publishing an unsigned build.
   is rejected.
 - The web client filters in memory from one real-time listener. That is fine
   for one person's journal and keeps it offline-capable.
+- Both clients follow the system light/dark setting; the web client adds a
+  manual toggle in the corner of every screen.
+- Errors shown in the interface are plain language. Exception details are
+  logged for debugging, never displayed.

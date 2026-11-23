@@ -147,7 +147,7 @@ The agent should test these with the Firebase emulator, confirming that a signed
 
 ## 6. Screens and behaviour
 
-Both clients implement the same screens.
+Both clients implement the same screens. Both follow the system light/dark setting, and the web client also has a manual toggle. User-facing errors are short and friendly; exception details stay in the log rather than the interface.
 
 ### 6.1 Sign in
 

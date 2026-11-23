@@ -11,6 +11,7 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import com.google.android.material.color.MaterialColors
 import com.google.android.material.datepicker.MaterialDatePicker
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.modi.decisionjournal.MainActivity
@@ -81,6 +82,22 @@ class DetailFragment : Fragment() {
                 else -> R.string.open
             },
         )
+        binding.statusText.setTextColor(
+            when {
+                decision.isReviewed -> MaterialColors.getColor(
+                    binding.statusText,
+                    com.google.android.material.R.attr.colorOnSurfaceVariant,
+                )
+                decision.isDue -> MaterialColors.getColor(
+                    binding.statusText,
+                    com.google.android.material.R.attr.colorSecondary,
+                )
+                else -> MaterialColors.getColor(
+                    binding.statusText,
+                    com.google.android.material.R.attr.colorPrimary,
+                )
+            },
+        )
 
         binding.predictionText.text = decision.prediction
         binding.confidenceText.text = getString(R.string.confidence_percent, decision.confidence)
@@ -89,7 +106,10 @@ class DetailFragment : Fragment() {
         binding.stateText.text = decision.state
         binding.tagsText.text = decision.tags.joinToString(", ").ifEmpty { "—" }
         binding.reviewDateText.text = ReviewDates.formatTimestamp(decision.reviewDate)
-        binding.createdText.text = ReviewDates.formatTimestamp(decision.createdAt)
+        binding.createdText.text = getString(
+            R.string.recorded_on,
+            ReviewDates.formatTimestamp(decision.createdAt),
+        )
 
         binding.postponedText.isVisible = decision.wasPostponed
         binding.postponedText.text = getString(

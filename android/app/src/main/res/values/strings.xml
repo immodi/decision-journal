@@ -73,6 +73,8 @@
     <string name="review_permanence">Saving closes this decision for good: it becomes read-only and cannot be deleted.</string>
     <string name="review">Review</string>
     <string name="reviewed_on">Reviewed on %1$s</string>
+    <string name="recorded_on">Recorded %1$s</string>
+    <string name="reviewed_permanent">Reviewed entries are permanent: they cannot be edited or deleted.</string>
     <string name="predicted_on">What you predicted on %1$s</string>
     <string name="confidence_at_time">Confidence at the time</string>
     <string name="postponed_once">Postponed once on %1$s</string>

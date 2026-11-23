@@ -9,33 +9,47 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="16dp">
+        android:paddingHorizontal="20dp"
+        android:paddingTop="20dp"
+        android:paddingBottom="40dp">
+
+        <TextView
+            android:id="@+id/detailTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textAppearance="?attr/textAppearanceHeadlineSmall" />
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:gravity="center_vertical"
             android:orientation="horizontal">
-
-            <TextView
-                android:id="@+id/detailTitle"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:textAppearance="?attr/textAppearanceHeadlineSmall" />
 
             <TextView
                 android:id="@+id/statusText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:textAppearance="?attr/textAppearanceTitleSmall" />
+                android:textAppearance="?attr/textAppearanceLabelLarge"
+                android:textColor="?attr/colorPrimary" />
+
+            <TextView
+                android:id="@+id/createdText"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:layout_weight="1"
+                android:textAppearance="?attr/textAppearanceBodySmall"
+                android:textColor="?attr/colorOnSurfaceVariant" />
         </LinearLayout>
 
         <TextView
             android:id="@+id/postponedText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
             android:textAppearance="?attr/textAppearanceBodySmall"
+            android:textColor="?attr/colorOnSurfaceVariant"
             android:visibility="gone" />
 
         <TextView
@@ -47,29 +61,124 @@
             android:textAppearance="?attr/textAppearanceBodyMedium"
             android:visibility="gone" />
 
-        <TextView style="@style/FieldLabel" android:text="@string/prediction" />
-        <TextView android:id="@+id/predictionText" style="@style/FieldValue" />
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="18dp"
+            app:cardBackgroundColor="?attr/colorSurface"
+            app:cardCornerRadius="18dp"
+            app:cardElevation="0dp"
+            app:strokeColor="?attr/colorOutline"
+            app:strokeWidth="1dp">
 
-        <TextView style="@style/FieldLabel" android:text="@string/confidence" />
-        <TextView android:id="@+id/confidenceText" style="@style/FieldValue" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="18dp">
 
-        <TextView style="@style/FieldLabel" android:text="@string/options" />
-        <TextView android:id="@+id/optionsText" style="@style/FieldValue" />
+                <TextView
+                    style="@style/Widget.DecisionJournal.Label"
+                    android:text="@string/prediction" />
 
-        <TextView style="@style/FieldLabel" android:text="@string/reasoning" />
-        <TextView android:id="@+id/reasoningText" style="@style/FieldValue" />
+                <TextView
+                    android:id="@+id/predictionText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
+                    android:textAppearance="?attr/textAppearanceTitleMedium"
+                    android:textStyle="italic" />
 
-        <TextView style="@style/FieldLabel" android:text="@string/state" />
-        <TextView android:id="@+id/stateText" style="@style/FieldValue" />
+                <TextView
+                    style="@style/Widget.DecisionJournal.Label"
+                    android:layout_marginTop="16dp"
+                    android:text="@string/confidence" />
 
-        <TextView style="@style/FieldLabel" android:text="@string/tags" />
-        <TextView android:id="@+id/tagsText" style="@style/FieldValue" />
+                <TextView
+                    android:id="@+id/confidenceText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?attr/textAppearanceHeadlineSmall"
+                    android:textColor="?attr/colorPrimary" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
 
-        <TextView style="@style/FieldLabel" android:text="@string/review_date" />
-        <TextView android:id="@+id/reviewDateText" style="@style/FieldValue" />
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            app:cardBackgroundColor="?attr/colorSurface"
+            app:cardCornerRadius="18dp"
+            app:cardElevation="0dp"
+            app:strokeColor="?attr/colorOutline"
+            app:strokeWidth="1dp">
 
-        <TextView style="@style/FieldLabel" android:text="@string/created" />
-        <TextView android:id="@+id/createdText" style="@style/FieldValue" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="18dp">
+
+                <TextView
+                    style="@style/Widget.DecisionJournal.Label"
+                    android:text="@string/options" />
+
+                <TextView
+                    android:id="@+id/optionsText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:textAppearance="?attr/textAppearanceBodyMedium" />
+
+                <TextView
+                    style="@style/Widget.DecisionJournal.Label"
+                    android:layout_marginTop="14dp"
+                    android:text="@string/reasoning" />
+
+                <TextView
+                    android:id="@+id/reasoningText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:textAppearance="?attr/textAppearanceBodyMedium" />
+
+                <TextView
+                    style="@style/Widget.DecisionJournal.Label"
+                    android:layout_marginTop="14dp"
+                    android:text="@string/state" />
+
+                <TextView
+                    android:id="@+id/stateText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:textAppearance="?attr/textAppearanceBodyMedium" />
+
+                <TextView
+                    style="@style/Widget.DecisionJournal.Label"
+                    android:layout_marginTop="14dp"
+                    android:text="@string/tags" />
+
+                <TextView
+                    android:id="@+id/tagsText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:textAppearance="?attr/textAppearanceBodyMedium" />
+
+                <TextView
+                    style="@style/Widget.DecisionJournal.Label"
+                    android:layout_marginTop="14dp"
+                    android:text="@string/review_date" />
+
+                <TextView
+                    android:id="@+id/reviewDateText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:textAppearance="?attr/textAppearanceBodyMedium" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
 
         <LinearLayout
             android:id="@+id/reviewGroup"
@@ -78,40 +187,96 @@
             android:orientation="vertical"
             android:visibility="gone">
 
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="24dp"
-                android:text="@string/review"
-                android:textAppearance="?attr/textAppearanceTitleMedium" />
-
-            <TextView style="@style/FieldLabel" android:text="@string/outcome" />
-            <TextView android:id="@+id/reviewOutcomeText" style="@style/FieldValue" />
-
-            <TextView style="@style/FieldLabel" android:text="@string/did_prediction_come_true" />
-            <TextView android:id="@+id/reviewResultText" style="@style/FieldValue" />
-
-            <TextView style="@style/FieldLabel" android:text="@string/reasoning_sound" />
-            <TextView android:id="@+id/reviewReasoningText" style="@style/FieldValue" />
-
-            <TextView android:id="@+id/reviewLessonLabel" style="@style/FieldLabel" android:text="@string/lesson" />
-            <TextView android:id="@+id/reviewLessonText" style="@style/FieldValue" />
-
-            <TextView
-                android:id="@+id/reviewedAtText"
+            <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="12dp"
-                android:textAppearance="?attr/textAppearanceBodySmall" />
+                app:cardBackgroundColor="?attr/colorSurface"
+                app:cardCornerRadius="18dp"
+                app:cardElevation="0dp"
+                app:strokeColor="?attr/colorOutline"
+                app:strokeWidth="1dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="18dp">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/review"
+                        android:textAppearance="?attr/textAppearanceTitleMedium" />
+
+                    <TextView
+                        style="@style/Widget.DecisionJournal.Label"
+                        android:layout_marginTop="14dp"
+                        android:text="@string/outcome" />
+
+                    <TextView
+                        android:id="@+id/reviewOutcomeText"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="2dp"
+                        android:textAppearance="?attr/textAppearanceBodyMedium" />
+
+                    <TextView
+                        style="@style/Widget.DecisionJournal.Label"
+                        android:layout_marginTop="14dp"
+                        android:text="@string/did_prediction_come_true" />
+
+                    <TextView
+                        android:id="@+id/reviewResultText"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="2dp"
+                        android:textAppearance="?attr/textAppearanceBodyMedium" />
+
+                    <TextView
+                        style="@style/Widget.DecisionJournal.Label"
+                        android:layout_marginTop="14dp"
+                        android:text="@string/reasoning_sound" />
+
+                    <TextView
+                        android:id="@+id/reviewReasoningText"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="2dp"
+                        android:textAppearance="?attr/textAppearanceBodyMedium" />
+
+                    <TextView
+                        android:id="@+id/reviewLessonLabel"
+                        style="@style/Widget.DecisionJournal.Label"
+                        android:layout_marginTop="14dp"
+                        android:text="@string/lesson" />
+
+                    <TextView
+                        android:id="@+id/reviewLessonText"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="2dp"
+                        android:textAppearance="?attr/textAppearanceBodyMedium" />
+
+                    <TextView
+                        android:id="@+id/reviewedAtText"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="14dp"
+                        android:textAppearance="?attr/textAppearanceBodySmall"
+                        android:textColor="?attr/colorOnSurfaceVariant" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
         </LinearLayout>
 
         <TextView
             android:id="@+id/permanentNote"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:text="@string/review_permanence"
+            android:layout_marginTop="12dp"
+            android:text="@string/reviewed_permanent"
             android:textAppearance="?attr/textAppearanceBodySmall"
+            android:textColor="?attr/colorOnSurfaceVariant"
             android:visibility="gone" />
 
         <LinearLayout
@@ -122,25 +287,11 @@
             android:orientation="vertical"
             android:visibility="gone">
 
-            <LinearLayout
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/reviewNowButton"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal">
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/reviewNowButton"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/review_now" />
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/editButton"
-                    style="@style/Widget.Material3.Button.OutlinedButton"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="8dp"
-                    android:text="@string/edit" />
-            </LinearLayout>
+                android:text="@string/review_now" />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -149,21 +300,31 @@
                 android:orientation="horizontal">
 
                 <com.google.android.material.button.MaterialButton
-                    android:id="@+id/postponeButton"
+                    android:id="@+id/editButton"
                     style="@style/Widget.Material3.Button.OutlinedButton"
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:text="@string/postpone" />
+                    android:layout_weight="1"
+                    android:text="@string/edit" />
 
                 <com.google.android.material.button.MaterialButton
-                    android:id="@+id/deleteButton"
-                    style="@style/Widget.Material3.Button.TextButton"
-                    android:layout_width="wrap_content"
+                    android:id="@+id/postponeButton"
+                    style="@style/Widget.Material3.Button.OutlinedButton"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
-                    android:text="@string/delete"
-                    android:textColor="?attr/colorError" />
+                    android:layout_weight="1"
+                    android:text="@string/postpone" />
             </LinearLayout>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/deleteButton"
+                style="@style/Widget.Material3.Button.TextButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:text="@string/delete"
+                android:textColor="?attr/colorError" />
         </LinearLayout>
 
     </LinearLayout>

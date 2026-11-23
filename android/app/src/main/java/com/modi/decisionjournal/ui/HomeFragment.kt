@@ -4,13 +4,12 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.AdapterView
-import android.widget.ArrayAdapter
-import android.widget.Spinner
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.android.material.chip.Chip
+import com.google.android.material.chip.ChipGroup
 import com.modi.decisionjournal.MainActivity
 import com.modi.decisionjournal.R
 import com.modi.decisionjournal.data.Decision
@@ -33,8 +32,6 @@ class HomeFragment : Fragment() {
     private var selectedTag: String? = null
     private var tagItems: List<String> = emptyList()
     private var allDecisions: List<Decision> = emptyList()
-
-    private val statusValues = listOf("all", "open", "reviewed")
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -64,15 +61,13 @@ class HomeFragment : Fragment() {
         binding.recentList.layoutManager = LinearLayoutManager(requireContext())
         binding.recentList.adapter = recentAdapter
 
-        binding.statusSpinner.adapter = ArrayAdapter(
-            requireContext(),
-            android.R.layout.simple_spinner_dropdown_item,
-            listOf(
-                getString(R.string.all_statuses),
-                getString(R.string.open),
-                getString(R.string.reviewed),
-            ),
-        )
+        buildStatusChips()
+
+        binding.statusGroup.setOnCheckedStateChangeListener { _, _ -> render() }
+        binding.tagGroup.setOnCheckedStateChangeListener { group, _ ->
+            selectedTag = checkedChipTag(group)?.ifEmpty { null }
+            render()
+        }
 
         binding.insightsButton.setOnClickListener {
             (activity as? MainActivity)?.openInsights()
@@ -84,14 +79,9 @@ class HomeFragment : Fragment() {
             (activity as? MainActivity)?.openNewDecision()
         }
 
-        binding.statusSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) = render()
-            override fun onNothingSelected(parent: AdapterView<*>?) = Unit
-        }
-
         viewModel.decisions.observe(viewLifecycleOwner) { decisions ->
             allDecisions = decisions
-            refreshTagSpinner(decisions)
+            refreshTagChips(decisions)
             render()
         }
     }
@@ -101,32 +91,55 @@ class HomeFragment : Fragment() {
         _binding = null
     }
 
-    private fun refreshTagSpinner(decisions: List<Decision>) {
-        val tags = (DecisionStates.SUGGESTED_TAGS + decisions.flatMap { it.tags }).distinct().sorted()
+    private fun newChip(label: String, value: String): Chip = Chip(requireContext()).apply {
+        id = View.generateViewId()
+        text = label
+        tag = value
+        isCheckable = true
+        isClickable = true
+    }
+
+    private fun buildStatusChips() {
+        val options = listOf(
+            "all" to getString(R.string.all),
+            "open" to getString(R.string.open),
+            "reviewed" to getString(R.string.reviewed),
+        )
+        options.forEach { (value, label) ->
+            binding.statusGroup.addView(newChip(label, value))
+        }
+        (binding.statusGroup.getChildAt(0) as? Chip)?.isChecked = true
+    }
+
+    private fun checkedChipTag(group: ChipGroup): String? {
+        val id = group.checkedChipId
+        if (id == View.NO_ID) return null
+        return group.findViewById<Chip>(id)?.tag as? String
+    }
+
+    private fun refreshTagChips(decisions: List<Decision>) {
+        val tags = (DecisionStates.SUGGESTED_TAGS + decisions.flatMap { it.tags })
+            .distinct()
+            .sorted()
         if (tags == tagItems) return
 
+        val previous = selectedTag
         tagItems = tags
-        val labels = listOf(getString(R.string.all_tags)) + tags
-        binding.tagSpinner.adapter = ArrayAdapter(
-            requireContext(),
-            android.R.layout.simple_spinner_dropdown_item,
-            labels,
-        )
-        val selectedIndex = selectedTag?.let { labels.indexOf(it) } ?: 0
-        binding.tagSpinner.setSelection(selectedIndex.coerceAtLeast(0), false)
 
-        binding.tagSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-                selectedTag = if (position == 0) null else tags[position - 1]
-                render()
-            }
+        binding.tagGroup.removeAllViews()
+        binding.tagGroup.addView(newChip(getString(R.string.all), ""))
+        tags.forEach { tag -> binding.tagGroup.addView(newChip(tag, tag)) }
 
-            override fun onNothingSelected(parent: AdapterView<*>?) = Unit
+        val index = if (previous == null) 0 else tags.indexOf(previous) + 1
+        (binding.tagGroup.getChildAt(index.coerceAtLeast(0)) as? Chip)?.isChecked = true
+
+        if (previous != null && !tags.contains(previous)) {
+            selectedTag = null
         }
     }
 
     private fun render() {
-        val status = statusValues[binding.statusSpinner.selectedItemPosition.coerceIn(0, 2)]
+        val status = checkedChipTag(binding.statusGroup) ?: "all"
         val tagFilter = selectedTag
         val matches = allDecisions.filter { decision ->
             (tagFilter == null || decision.tags.contains(tagFilter)) &&

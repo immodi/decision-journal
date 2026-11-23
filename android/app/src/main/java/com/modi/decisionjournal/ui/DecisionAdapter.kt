@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.color.MaterialColors
 import com.modi.decisionjournal.R
 import com.modi.decisionjournal.data.Decision
 import com.modi.decisionjournal.databinding.ItemDecisionBinding
@@ -72,6 +73,22 @@ class DecisionAdapter(
         binding.postponedText.isVisible = decision.wasPostponed
         binding.cardActions.isVisible = decision.isDue
         binding.postponeButton.isVisible = decision.isDue && !decision.wasPostponed
+
+        val statusColor = when {
+            decision.isReviewed -> MaterialColors.getColor(
+                binding.statusText,
+                com.google.android.material.R.attr.colorOnSurfaceVariant,
+            )
+            decision.isDue -> MaterialColors.getColor(
+                binding.statusText,
+                com.google.android.material.R.attr.colorSecondary,
+            )
+            else -> MaterialColors.getColor(
+                binding.statusText,
+                com.google.android.material.R.attr.colorPrimary,
+            )
+        }
+        binding.statusText.setTextColor(statusColor)
 
         binding.root.setOnClickListener { onOpen(decision) }
         binding.reviewButton.setOnClickListener { onReview(decision) }

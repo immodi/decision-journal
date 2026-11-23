@@ -43,7 +43,8 @@ export default function Settings() {
       await save({ reminderTime, defaultReviewDays });
       setMessage('Settings saved.');
     } catch (nextError) {
-      setError(nextError instanceof Error ? nextError.message : String(nextError));
+      console.error(nextError);
+      setError('Could not save settings. Try again.');
     } finally {
       setBusy(false);
     }

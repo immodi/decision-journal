@@ -12,7 +12,7 @@ export default function Home() {
   const [status, setStatus] = useState<StatusFilter>('all');
 
   if (loading) return <p className="muted">Loading decisions…</p>;
-  if (error) return <p className="error">{error.message}</p>;
+  if (error) return <p className="error">Could not load your decisions. Check your connection and try again.</p>;
 
   const tags = [...new Set([...SUGGESTED_TAGS, ...decisions.flatMap((entry) => entry.tags)])];
   const matches = (entry: Decision): boolean => (

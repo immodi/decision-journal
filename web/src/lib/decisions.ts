@@ -76,7 +76,3 @@ export function sortByReviewDate(list: Decision[]): Decision[] {
     (a, b) => (toDate(a.reviewDate)?.getTime() ?? 0) - (toDate(b.reviewDate)?.getTime() ?? 0),
   );
 }
-
-export function errorMessage(error: unknown): string {
-  return error instanceof Error ? error.message : String(error);
-}

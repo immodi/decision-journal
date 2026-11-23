@@ -14,15 +14,18 @@ const MESSAGES: Record<string, string> = {
   'auth/missing-password': 'Enter a password.',
   'auth/weak-password': 'Use at least six characters.',
   'auth/email-already-in-use': 'That email already has an account. Sign in instead.',
-  'auth/operation-not-allowed': 'Email and password sign-in is not enabled for this project.',
+  'auth/operation-not-allowed': 'This sign-in method is not available right now.',
   'auth/popup-closed-by-user': 'Google sign-in was cancelled.',
-  'auth/popup-blocked': 'The browser blocked the Google sign-in window.',
-  'auth/unauthorized-domain': 'This site is not authorised for Google sign-in yet. Add it under Authentication → Settings → Authorised domains.',
+  'auth/cancelled-popup-request': 'Google sign-in was cancelled.',
+  'auth/popup-blocked': 'The browser blocked the sign-in window.',
+  'auth/unauthorized-domain': 'Google sign-in is not available on this site yet.',
+  'auth/network-request-failed': 'Check your connection and try again.',
+  'auth/too-many-requests': 'Too many attempts. Wait a moment and try again.',
 };
 
 function messageFor(error: unknown): string {
-  if (error instanceof FirebaseError) return MESSAGES[error.code] ?? error.message;
-  return error instanceof Error ? error.message : 'Sign in failed.';
+  if (error instanceof FirebaseError && MESSAGES[error.code]) return MESSAGES[error.code];
+  return 'Sign-in failed. Please try again.';
 }
 
 type Mode = 'signin' | 'register';
@@ -47,6 +50,7 @@ export default function SignIn() {
         await signInWithEmailAndPassword(auth, email, password);
       }
     } catch (nextError) {
+      console.error(nextError);
       setError(messageFor(nextError));
     } finally {
       setBusy(false);
@@ -59,6 +63,7 @@ export default function SignIn() {
     try {
       await signInWithPopup(auth, new GoogleAuthProvider());
     } catch (nextError) {
+      console.error(nextError);
       setError(messageFor(nextError));
     } finally {
       setBusy(false);

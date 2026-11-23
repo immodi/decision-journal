@@ -150,7 +150,8 @@ export default function DecisionDetail() {
       });
       setDraft(null);
     } catch (nextError) {
-      setError(nextError instanceof Error ? nextError.message : String(nextError));
+      console.error(nextError);
+      setError('Could not save your changes. Try again.');
     } finally {
       setBusy(false);
     }
@@ -163,7 +164,8 @@ export default function DecisionDetail() {
       await postpone(item.id, value);
       setPostponing(false);
     } catch (nextError) {
-      setError(nextError instanceof Error ? nextError.message : String(nextError));
+      console.error(nextError);
+      setError('Could not postpone the review. Try again.');
     } finally {
       setBusy(false);
     }
@@ -177,7 +179,8 @@ export default function DecisionDetail() {
       await remove(item.id);
       navigate('/');
     } catch (nextError) {
-      setError(nextError instanceof Error ? nextError.message : String(nextError));
+      console.error(nextError);
+      setError('Could not delete this decision. Try again.');
       setBusy(false);
     }
   }

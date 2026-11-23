@@ -45,7 +45,7 @@ export default function Insights() {
   const { decisions, loading, error } = useDecisions();
 
   if (loading) return <p className="muted">Loading…</p>;
-  if (error) return <p className="error">{error.message}</p>;
+  if (error) return <p className="error">Could not load your decisions. Check your connection and try again.</p>;
 
   const open = decisions.filter((entry) => entry.status === 'open');
   const reviewed = decisions.filter((entry) => entry.status === 'reviewed');

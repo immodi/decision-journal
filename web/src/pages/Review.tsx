@@ -39,7 +39,8 @@ export default function Review() {
       });
       navigate(`/decisions/${id}`);
     } catch (nextError) {
-      setError(nextError instanceof Error ? nextError.message : String(nextError));
+      console.error(nextError);
+      setError('Could not save the review. Try again.');
       setBusy(false);
     }
   }

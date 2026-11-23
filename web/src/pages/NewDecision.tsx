@@ -79,7 +79,8 @@ export default function NewDecision() {
       });
       navigate(`/decisions/${created.id}`);
     } catch (nextError) {
-      setError(nextError instanceof Error ? nextError.message : String(nextError));
+      console.error(nextError);
+      setError('Could not save this decision. Try again.');
       setBusy(false);
     }
   }

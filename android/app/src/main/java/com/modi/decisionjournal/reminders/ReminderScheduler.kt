@@ -1,6 +1,7 @@
 package com.modi.decisionjournal.reminders
 
 import android.content.Context
+import android.util.Log
 import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
@@ -27,9 +28,12 @@ object ReminderScheduler {
 
         WorkManager.getInstance(context).enqueueUniquePeriodicWork(
             WORK_NAME,
-            ExistingPeriodicWorkPolicy.UPDATE,
+            // UPDATE keeps the original next-run time, which would ignore a new
+            // reminder time until the old slot fired; re-create the work instead.
+            ExistingPeriodicWorkPolicy.CANCEL_AND_REENQUEUE,
             request,
         )
+        Log.i(WORK_NAME, "Daily check scheduled at $reminderTime (in ${delay / 60000} min)")
     }
 
     fun cancel(context: Context) {

@@ -1,0 +1,35 @@
+# Firebase project config (per-project identifiers, not secrets: committing it
+# lets CI build without extra setup)
+# google-services.json is committed on purpose.
+
+# Signing material: never commit these
+android/keystore/
+android/keystore.properties
+
+# Web
+web/node_modules/
+web/dist/
+web/.env
+web/.env.local
+web/.wrangler/
+
+# Android
+android/.gradle/
+android/build/
+android/app/build/
+android/local.properties
+android/captures/
+*.apk
+*.aab
+.idea/
+*.iml
+
+# Firebase emulator
+firebase/node_modules/
+firebase-debug.log
+firestore-debug.log
+ui-debug.log
+.firebase/
+
+# OS
+.DS_Store

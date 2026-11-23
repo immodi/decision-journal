@@ -77,6 +77,8 @@ class MainActivity : AppCompatActivity() {
 
     fun openDetail(id: String) = replace(DetailFragment.forDecision(id))
 
+    fun openPostpone(id: String) = replace(DetailFragment.forDecision(id, postpone = true))
+
     fun openReview(id: String) = replace(ReviewFragment.forDecision(id))
 
     fun openInsights() = replace(InsightsFragment())

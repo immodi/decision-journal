@@ -48,12 +48,12 @@ class HomeFragment : Fragment() {
         dueAdapter = DecisionAdapter(
             onOpen = { openDetail(it) },
             onReview = { openReview(it) },
-            onPostpone = { openDetail(it) },
+            onPostpone = { openPostpone(it) },
         )
         recentAdapter = DecisionAdapter(
             onOpen = { openDetail(it) },
             onReview = { openReview(it) },
-            onPostpone = { openDetail(it) },
+            onPostpone = { openPostpone(it) },
         )
 
         binding.dueList.layoutManager = LinearLayoutManager(requireContext())
@@ -169,5 +169,9 @@ class HomeFragment : Fragment() {
 
     private fun openReview(decision: Decision) {
         (activity as? MainActivity)?.openReview(decision.id ?: return)
+    }
+
+    private fun openPostpone(decision: Decision) {
+        (activity as? MainActivity)?.openPostpone(decision.id ?: return)
     }
 }

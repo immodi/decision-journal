@@ -1,4 +1,4 @@
-import { useState, type FormEvent } from 'react';
+import { useState, type FormEvent, type ReactNode } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import type { Timestamp } from 'firebase/firestore';
 import { useDecision, useDecisions } from '../hooks/useDecisions';
@@ -13,67 +13,64 @@ import {
   REASONING_RATINGS,
   STATES,
 } from '../lib/decisions';
-import type { DecisionState } from '../types';
+import {
+  buttonDanger,
+  buttonGhost,
+  buttonPrimary,
+  buttonSecondary,
+  buttonSecondarySmall,
+  card,
+  chipOff,
+  chipOn,
+  dateInput,
+  field,
+  hint,
+  input,
+  mutedText,
+  pillDue,
+  pillOpen,
+  pillReviewed,
+  sectionTitle,
+  textarea,
+} from '../components/ui';
+import type { Decision, DecisionState } from '../types';
 
 const labelOf = (
   pairs: ReadonlyArray<readonly [string, string]>,
   value: string | null | undefined,
 ): string => pairs.find(([key]) => key === value)?.[1] ?? value ?? '—';
 
-interface DetailFieldsProps {
-  decision: import('../types').Decision;
+function Row({ label, children }: { label: string; children: ReactNode }) {
+  return (
+    <div className="grid gap-0.5">
+      <dt className={sectionTitle}>{label}</dt>
+      <dd className="m-0 text-sm leading-relaxed">{children}</dd>
+    </div>
+  );
 }
 
-function DetailFields({ decision }: DetailFieldsProps) {
+function DetailFields({ decision }: { decision: Decision }) {
   return (
-    <dl className="detail-grid">
-      <div className="detail-row">
-        <dt>Prediction</dt>
-        <dd>{decision.prediction}</dd>
-      </div>
-      <div className="detail-row">
-        <dt>Confidence</dt>
-        <dd>{decision.confidence}%</dd>
-      </div>
+    <dl className={`${card} grid gap-4 p-5`}>
+      <Row label="Prediction">{decision.prediction}</Row>
+      <Row label="Confidence">{decision.confidence}%</Row>
       {decision.options.length > 0 && (
-        <div className="detail-row">
-          <dt>Options considered</dt>
-          <dd>
-            <ul style={{ margin: 0, paddingLeft: '1.1rem' }}>
-              {decision.options.map((option) => <li key={option}>{option}</li>)}
-            </ul>
-          </dd>
-        </div>
+        <Row label="Options considered">
+          <ul className="m-0 list-disc pl-5">
+            {decision.options.map((option) => <li key={option}>{option}</li>)}
+          </ul>
+        </Row>
       )}
-      {decision.reasoning && (
-        <div className="detail-row">
-          <dt>Reasoning</dt>
-          <dd>{decision.reasoning}</dd>
-        </div>
-      )}
-      <div className="detail-row">
-        <dt>State</dt>
-        <dd>{decision.state || '—'}</dd>
-      </div>
-      {decision.tags.length > 0 && (
-        <div className="detail-row">
-          <dt>Tags</dt>
-          <dd>{decision.tags.join(', ')}</dd>
-        </div>
-      )}
-      <div className="detail-row">
-        <dt>Review date</dt>
-        <dd>
-          {formatDate(decision.reviewDate)}
-          {decision.postponedAt && (
-            <span className="muted small"> · postponed once on {formatDate(decision.postponedAt)}</span>
-          )}
-        </dd>
-      </div>
-      <div className="detail-row">
-        <dt>Created</dt>
-        <dd>{formatDate(decision.createdAt)}</dd>
-      </div>
+      {decision.reasoning && <Row label="Reasoning">{decision.reasoning}</Row>}
+      <Row label="State">{decision.state || '—'}</Row>
+      {decision.tags.length > 0 && <Row label="Tags">{decision.tags.join(', ')}</Row>}
+      <Row label="Review date">
+        {formatDate(decision.reviewDate)}
+        {decision.postponedAt && (
+          <span className="text-muted"> · postponed once on {formatDate(decision.postponedAt)}</span>
+        )}
+      </Row>
+      <Row label="Created">{formatDate(decision.createdAt)}</Row>
     </dl>
   );
 }
@@ -100,13 +97,15 @@ export default function DecisionDetail() {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  if (loading) return <p className="muted">Loading…</p>;
+  if (loading) return <p className={`${mutedText} pt-10 text-center`}>Loading…</p>;
   if (!decision) {
     return (
-      <>
-        <h1>Decision not found</h1>
-        <button className="button" type="button" onClick={() => navigate('/')}>Back to Home</button>
-      </>
+      <div className="pt-10 text-center">
+        <h1 className="text-xl font-semibold">Decision not found</h1>
+        <button className={`${buttonSecondary} mt-4`} type="button" onClick={() => navigate('/')}>
+          Back to Home
+        </button>
+      </div>
     );
   }
 
@@ -115,6 +114,7 @@ export default function DecisionDetail() {
   const alreadyPostponed = Boolean(decision.postponedAt);
   // Keep a non-null alias for use inside async closures below.
   const item = decision;
+  const statusClass = reviewed ? pillReviewed : overdue ? pillDue : pillOpen;
 
   const startEdit = (): void => {
     setError(null);
@@ -191,100 +191,102 @@ export default function DecisionDetail() {
   };
 
   return (
-    <>
-      <div className="row wrap" style={{ justifyContent: 'space-between', marginBottom: '0.75rem' }}>
-        <h1 style={{ margin: 0 }}>{decision.title}</h1>
-        <span className={`pill ${reviewed ? 'reviewed' : overdue ? 'overdue' : 'open'}`}>
+    <div className="mx-auto max-w-2xl">
+      <header className="mb-6 flex flex-wrap items-start justify-between gap-3">
+        <div>
+          <h1 className="text-2xl font-semibold leading-tight tracking-tight">{decision.title}</h1>
+          <p className={mutedText}>Recorded {formatDate(decision.createdAt)}</p>
+        </div>
+        <span className={statusClass}>
           {reviewed ? 'Reviewed' : overdue ? 'Due for review' : 'Open'}
         </span>
-      </div>
+      </header>
 
-      {error && <p className="error">{error}</p>}
+      {error && <p className="mb-4 text-sm text-danger">{error}</p>}
 
       {reviewed ? (
         <>
           <DetailFields decision={decision} />
-          <h2>Review</h2>
-          <dl className="detail-grid review-block">
-            <div className="detail-row">
-              <dt>What happened</dt>
-              <dd>{decision.review?.outcome}</dd>
-            </div>
-            <div className="detail-row">
-              <dt>Prediction came true</dt>
-              <dd>{labelOf(PREDICTION_RESULTS, decision.review?.predictionResult)}</dd>
-            </div>
-            <div className="detail-row">
-              <dt>Reasoning, given what was known then</dt>
-              <dd>{labelOf(REASONING_RATINGS, decision.review?.reasoningRating)}</dd>
-            </div>
-            {decision.review?.lesson && (
-              <div className="detail-row">
-                <dt>Lesson</dt>
-                <dd>{decision.review.lesson}</dd>
-              </div>
-            )}
-            <div className="detail-row">
-              <dt>Reviewed</dt>
-              <dd>{formatDate(decision.review?.reviewedAt)}</dd>
-            </div>
+
+          <h2 className="mb-3 mt-8 text-lg font-semibold tracking-tight">Review</h2>
+          <dl className={`${card} grid gap-4 border-l-2 border-l-accent p-5`}>
+            <Row label="What happened">{decision.review?.outcome}</Row>
+            <Row label="Prediction came true">
+              {labelOf(PREDICTION_RESULTS, decision.review?.predictionResult)}
+            </Row>
+            <Row label="Reasoning, given what was known then">
+              {labelOf(REASONING_RATINGS, decision.review?.reasoningRating)}
+            </Row>
+            {decision.review?.lesson && <Row label="Lesson">{decision.review.lesson}</Row>}
+            <Row label="Reviewed">{formatDate(decision.review?.reviewedAt)}</Row>
           </dl>
-          <p className="muted small">Reviewed entries are permanent: they cannot be edited or deleted.</p>
+
+          <p className={`${mutedText} mt-4`}>
+            Reviewed entries are permanent: they cannot be edited or deleted.
+          </p>
         </>
       ) : draft ? (
-        <form className="stack" onSubmit={saveEdit}>
-          <label className="field">
+        <form className={`${card} grid gap-5 p-6`} onSubmit={saveEdit}>
+          <label className={field}>
             Title
             <input
               type="text"
+              className={input}
               value={draft.title}
               onChange={(event) => setDraft({ ...draft, title: event.target.value })}
             />
           </label>
-          <label className="field">
+
+          <label className={field}>
             Options considered
-            <span className="hint">One per line.</span>
+            <span className={hint}>One per line.</span>
             <textarea
+              className={textarea}
               value={draft.options}
               onChange={(event) => setDraft({ ...draft, options: event.target.value })}
             />
           </label>
-          <label className="field">
+
+          <label className={field}>
             Reasoning
             <textarea
+              className={textarea}
               value={draft.reasoning}
               onChange={(event) => setDraft({ ...draft, reasoning: event.target.value })}
             />
           </label>
-          <label className="field">
+
+          <label className={field}>
             Prediction
             <input
               type="text"
+              className={input}
               value={draft.prediction}
               onChange={(event) => setDraft({ ...draft, prediction: event.target.value })}
             />
           </label>
-          <label className="field">
+
+          <label className={field}>
             Confidence: {draft.confidence}%
-            <span className="range-row">
-              <input
-                type="range"
-                min="0"
-                max="100"
-                step="5"
-                value={draft.confidence}
-                onChange={(event) => setDraft({ ...draft, confidence: Number(event.target.value) })}
-              />
-            </span>
+            <input
+              type="range"
+              min="0"
+              max="100"
+              step="5"
+              value={draft.confidence}
+              onChange={(event) => setDraft({ ...draft, confidence: Number(event.target.value) })}
+              className="w-full accent-accent"
+            />
           </label>
-          <div className="field">
-            <span style={{ fontSize: '0.9rem', fontWeight: 600 }}>State</span>
-            <div className="chips" style={{ marginTop: '0.35rem' }}>
+
+          <div className="grid gap-2">
+            <span className="text-sm font-medium">State</span>
+            <div className="flex flex-wrap gap-2">
               {STATES.map((value) => (
                 <button
                   key={value}
                   type="button"
-                  className={`chip ${draft.state === value ? 'selected' : ''}`}
+                  className={draft.state === value ? chipOn : chipOff}
                   onClick={() => setDraft({ ...draft, state: value })}
                 >
                   {value}
@@ -292,20 +294,23 @@ export default function DecisionDetail() {
               ))}
             </div>
           </div>
-          <label className="field">
+
+          <label className={field}>
             Tags
-            <span className="hint">Comma separated. The review date cannot be changed here.</span>
+            <span className={hint}>Comma separated. The review date cannot be changed here.</span>
             <input
               type="text"
+              className={input}
               value={draft.tags}
               onChange={(event) => setDraft({ ...draft, tags: event.target.value })}
             />
           </label>
-          <div className="actions end">
-            <button type="button" className="button" onClick={() => setDraft(null)} disabled={busy}>
+
+          <div className="flex justify-end gap-2 border-t border-line pt-5">
+            <button type="button" className={buttonGhost} onClick={() => setDraft(null)} disabled={busy}>
               Cancel
             </button>
-            <button type="submit" className="button primary" disabled={busy}>
+            <button type="submit" className={buttonPrimary} disabled={busy}>
               {busy ? 'Saving…' : 'Save changes'}
             </button>
           </div>
@@ -315,17 +320,19 @@ export default function DecisionDetail() {
           <DetailFields decision={decision} />
 
           {postponing && (
-            <div className="card" style={{ marginTop: '1rem' }}>
-              <strong>Postpone this review</strong>
-              <p className="muted small" style={{ marginTop: '0.25rem' }}>
-                The review date can be moved once. Choose the new date.
-              </p>
-              <div className="row wrap" style={{ marginTop: '0.5rem' }}>
+            <div className={`${card} mt-4 grid gap-3 p-4`}>
+              <div>
+                <strong className="text-sm font-semibold">Postpone this review</strong>
+                <p className={`${mutedText} mt-0.5`}>
+                  The review date can be moved once. Choose the new date.
+                </p>
+              </div>
+              <div className="flex flex-wrap items-center gap-2">
                 {QUICK_DAYS.map(([days, label]) => (
                   <button
                     key={days}
                     type="button"
-                    className="chip"
+                    className={chipOff}
                     disabled={busy}
                     onClick={() => void postponeTo(inDays(days))}
                   >
@@ -334,42 +341,46 @@ export default function DecisionDetail() {
                 ))}
                 <input
                   type="date"
+                  className={dateInput}
                   value={postponeDate}
                   onChange={(event) => setPostponeDate(event.target.value)}
-                  style={{ width: 'auto' }}
                 />
                 <button
                   type="button"
-                  className="button primary"
+                  className={buttonSecondarySmall}
                   disabled={busy || !postponeDate}
                   onClick={confirmPostpone}
                 >
                   Postpone
                 </button>
-                <button type="button" className="button" onClick={() => setPostponing(false)}>
+                <button
+                  type="button"
+                  className={buttonGhost}
+                  onClick={() => setPostponing(false)}
+                >
                   Cancel
                 </button>
               </div>
             </div>
           )}
 
-          <div className="actions">
+          <div className="mt-6 flex flex-wrap gap-2">
             {overdue && (
               <button
                 type="button"
-                className="button primary"
+                className={buttonPrimary}
                 onClick={() => navigate(`/decisions/${decision.id}/review`)}
               >
                 Review now
               </button>
             )}
-            <button type="button" className="button" onClick={startEdit} disabled={busy}>
+            <button type="button" className={buttonSecondary} onClick={startEdit} disabled={busy}>
               Edit
             </button>
             {overdue && !alreadyPostponed && (
               <button
                 type="button"
-                className="button"
+                className={buttonSecondary}
                 disabled={busy}
                 onClick={() => {
                   setPostponing(true);
@@ -379,12 +390,12 @@ export default function DecisionDetail() {
                 Postpone
               </button>
             )}
-            <button type="button" className="button danger" onClick={() => void destroy()} disabled={busy}>
+            <button type="button" className={buttonDanger} onClick={() => void destroy()} disabled={busy}>
               Delete
             </button>
           </div>
         </>
       )}
-    </>
+    </div>
   );
 }

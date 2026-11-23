@@ -2,6 +2,19 @@ import { useState, type FormEvent } from 'react';
 import { Navigate, useNavigate, useParams } from 'react-router-dom';
 import { useDecision, useDecisions } from '../hooks/useDecisions';
 import { formatDate, PREDICTION_RESULTS, REASONING_RATINGS } from '../lib/decisions';
+import {
+  buttonGhost,
+  buttonPrimary,
+  card,
+  chipOff,
+  chipOn,
+  field,
+  hint,
+  input,
+  mutedText,
+  sectionTitle,
+  textarea,
+} from '../components/ui';
 import type { PredictionResult, ReasoningRating } from '../types';
 
 export default function Review() {
@@ -17,8 +30,8 @@ export default function Review() {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  if (loading) return <p className="muted">Loading…</p>;
-  if (!decision) return <p className="muted">That decision no longer exists.</p>;
+  if (loading) return <p className={`${mutedText} pt-10 text-center`}>Loading…</p>;
+  if (!decision) return <p className={`${mutedText} pt-10 text-center`}>That decision no longer exists.</p>;
   if (decision.status !== 'open') return <Navigate to={`/decisions/${decision.id}`} replace />;
 
   async function submit(event: FormEvent<HTMLFormElement>): Promise<void> {
@@ -46,38 +59,42 @@ export default function Review() {
   }
 
   return (
-    <>
-      <h1>Review: {decision.title}</h1>
+    <div className="mx-auto max-w-2xl">
+      <header className="mb-6">
+        <h1 className="text-2xl font-semibold leading-tight tracking-tight">Review</h1>
+        <p className={mutedText}>{decision.title}</p>
+      </header>
 
-      <dl className="card" style={{ marginBottom: '1.25rem' }}>
-        <div className="detail-row">
-          <dt>What you predicted on {formatDate(decision.createdAt)}</dt>
-          <dd style={{ fontSize: '1.05rem' }}>“{decision.prediction}”</dd>
+      <div className={`${card} mb-5 grid gap-3 border-l-2 border-l-accent p-5`}>
+        <div className="grid gap-0.5">
+          <span className={sectionTitle}>What you predicted on {formatDate(decision.createdAt)}</span>
+          <span className="text-base italic leading-relaxed">“{decision.prediction}”</span>
         </div>
-        <div className="detail-row" style={{ marginTop: '0.5rem' }}>
-          <dt>Confidence at the time</dt>
-          <dd>{decision.confidence}%</dd>
+        <div className="grid gap-0.5">
+          <span className={sectionTitle}>Confidence at the time</span>
+          <span className="text-sm">{decision.confidence}%</span>
         </div>
-      </dl>
+      </div>
 
-      <form className="stack" onSubmit={submit}>
-        <label className="field">
+      <form className={`${card} grid gap-5 p-6`} onSubmit={submit}>
+        <label className={field}>
           What actually happened
           <textarea
+            className={textarea}
             value={outcome}
             onChange={(event) => setOutcome(event.target.value)}
             autoFocus
           />
         </label>
 
-        <div className="field">
-          <span style={{ fontSize: '0.9rem', fontWeight: 600 }}>Did the prediction come true?</span>
-          <div className="chips" style={{ marginTop: '0.35rem' }}>
+        <div className="grid gap-2">
+          <span className="text-sm font-medium">Did the prediction come true?</span>
+          <div className="flex flex-wrap gap-2">
             {PREDICTION_RESULTS.map(([value, label]) => (
               <button
                 key={value}
                 type="button"
-                className={`chip ${predictionResult === value ? 'selected' : ''}`}
+                className={predictionResult === value ? chipOn : chipOff}
                 onClick={() => setPredictionResult(value)}
               >
                 {label}
@@ -86,17 +103,17 @@ export default function Review() {
           </div>
         </div>
 
-        <div className="field">
-          <span style={{ fontSize: '0.9rem', fontWeight: 600 }}>
+        <div className="grid gap-2">
+          <span className="text-sm font-medium">
             Was the reasoning sound, given what was known then?
           </span>
-          <span className="hint">Judge the process, not the outcome.</span>
-          <div className="chips" style={{ marginTop: '0.35rem' }}>
+          <span className={hint}>Judge the process, not the outcome.</span>
+          <div className="flex flex-wrap gap-2">
             {REASONING_RATINGS.map(([value, label]) => (
               <button
                 key={value}
                 type="button"
-                className={`chip ${reasoningRating === value ? 'selected' : ''}`}
+                className={reasoningRating === value ? chipOn : chipOff}
                 onClick={() => setReasoningRating(value)}
               >
                 {label}
@@ -105,31 +122,32 @@ export default function Review() {
           </div>
         </div>
 
-        <label className="field">
+        <label className={field}>
           Lesson
-          <span className="hint">Optional, one line.</span>
+          <span className={hint}>Optional, one line.</span>
           <input
             type="text"
+            className={input}
             value={lesson}
             onChange={(event) => setLesson(event.target.value)}
           />
         </label>
 
-        {error && <p className="error">{error}</p>}
+        {error && <p className="text-sm text-danger">{error}</p>}
 
-        <p className="muted small">
+        <p className={`${mutedText} rounded-xl bg-surface-2 px-4 py-3`}>
           Saving closes this decision for good: the entry becomes read-only and cannot be deleted.
         </p>
 
-        <div className="actions end">
-          <button type="button" className="button" onClick={() => navigate(-1)} disabled={busy}>
+        <div className="flex justify-end gap-2 border-t border-line pt-5">
+          <button type="button" className={buttonGhost} onClick={() => navigate(-1)} disabled={busy}>
             Cancel
           </button>
-          <button type="submit" className="button primary" disabled={busy}>
+          <button type="submit" className={buttonPrimary} disabled={busy}>
             {busy ? 'Saving…' : 'Save review'}
           </button>
         </div>
       </form>
-    </>
+    </div>
   );
 }

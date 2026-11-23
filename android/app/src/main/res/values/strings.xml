@@ -4,6 +4,8 @@
     <string name="scaffold_message">The Android client is wired to Firebase.</string>
 
     <string name="sign_in">Sign in</string>
+    <string name="sign_in_subtitle">Record the decision now. Judge the reasoning later.</string>
+    <string name="all">All</string>
     <string name="create_account">Create account</string>
     <string name="have_account">Already have an account? Sign in</string>
     <string name="new_here">New here? Create an account</string>

@@ -1,5 +1,5 @@
-import { useState, type FormEvent, type ReactNode } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useState, useEffect, type FormEvent, type ReactNode } from 'react';
+import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import type { Timestamp } from 'firebase/firestore';
 import { useDecision, useDecisions } from '../hooks/useDecisions';
 import {
@@ -96,6 +96,18 @@ export default function DecisionDetail() {
   const [postponeDate, setPostponeDate] = useState('');
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const wantsPostpone = searchParams.get('postpone') === '1';
+
+  // Arriving from the "Postpone" action on a card: open the panel immediately.
+  useEffect(() => {
+    if (!wantsPostpone || !decision || decision.status !== 'open') return;
+    setPostponing(true);
+    setPostponeDate(dateInputValue(inDays(30)));
+    const next = new URLSearchParams(searchParams);
+    next.delete('postpone');
+    setSearchParams(next, { replace: true });
+  }, [wantsPostpone, decision, searchParams, setSearchParams]);
 
   if (loading) return <p className={`${mutedText} pt-10 text-center`}>Loading…</p>;
   if (!decision) {

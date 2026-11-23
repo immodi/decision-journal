@@ -58,7 +58,7 @@ export default function DecisionCard({ decision }: DecisionCardProps) {
             Review now
           </Link>
           {!decision.postponedAt && (
-            <Link to={`/decisions/${decision.id}`} className={buttonSecondarySmall}>
+            <Link to={`/decisions/${decision.id}?postpone=1`} className={buttonSecondarySmall}>
               Postpone
             </Link>
           )}

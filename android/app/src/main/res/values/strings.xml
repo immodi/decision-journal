@@ -13,7 +13,7 @@
     <string name="sign_in_failed">Sign in failed. Check your details and try again.</string>
     <string name="or_divider">or</string>
     <string name="google_sign_in">Continue with Google</string>
-    <string name="google_sign_in_failed">Google sign-in failed. Check that this app’s SHA-1 fingerprint is registered in Firebase.</string>
+    <string name="google_sign_in_failed">Google sign-in didn’t work. Try again or use your email and password.</string>
     <string name="google_web_client_id" translatable="false">534326115440-oru1t1nu9gkcumnnsvs7fgh7cm67l1gg.apps.googleusercontent.com</string>
 
     <string name="home">Home</string>
@@ -90,8 +90,13 @@
     <string name="delete_title">Delete decision?</string>
     <string name="delete_body">This cannot be undone. A reviewed decision can no longer be deleted.</string>
     <string name="delete_confirm">Delete</string>
-    <string name="save_failed">Could not save: %1$s</string>
-    <string name="generic_failure">Something went wrong.</string>
+    <string name="save_failed">Could not save. Try again.</string>
+    <string name="generic_failure">Something went wrong. Try again.</string>
+    <string name="postpone_failed">Could not postpone the review. Try again.</string>
+    <string name="delete_failed">Could not delete the decision. Try again.</string>
+    <string name="review_failed">Could not save the review. Try again.</string>
+    <string name="export_failed">Could not export your data. Try again.</string>
+    <string name="settings_save_failed">Could not save settings. Try again.</string>
 
     <string name="open_count">Open</string>
     <string name="reviewed_count">Reviewed</string>

@@ -1,6 +1,7 @@
 package com.modi.decisionjournal.ui
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -142,9 +143,10 @@ class ReviewFragment : Fragment() {
                 )
                 (activity as? MainActivity)?.goBack()
             } catch (error: Exception) {
+                Log.e(javaClass.simpleName, "Saving the review failed", error)
                 Toast.makeText(
                     requireContext(),
-                    error.localizedMessage ?: getString(R.string.generic_failure),
+                    getString(R.string.review_failed),
                     Toast.LENGTH_LONG,
                 ).show()
                 saving = false

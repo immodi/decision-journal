@@ -1,6 +1,7 @@
 package com.modi.decisionjournal.ui
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -248,12 +249,8 @@ class NewDecisionFragment : Fragment() {
                     (activity as? MainActivity)?.openDetailAfterCreate(id)
                 }
             } catch (error: Exception) {
-                showError(
-                    getString(
-                        R.string.save_failed,
-                        error.localizedMessage ?: getString(R.string.generic_failure),
-                    ),
-                )
+                Log.e(javaClass.simpleName, "Saving the decision failed", error)
+                showError(getString(R.string.save_failed))
                 setSaving(false)
             }
         }

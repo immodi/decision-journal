@@ -2,6 +2,7 @@ package com.modi.decisionjournal.ui
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -105,8 +106,8 @@ class SettingsFragment : Fragment() {
                 binding.messageText.setText(R.string.settings_saved)
                 binding.messageText.isVisible = true
             } catch (error: Exception) {
-                binding.messageText.text = error.localizedMessage
-                    ?: getString(R.string.generic_failure)
+                Log.e(javaClass.simpleName, "Saving settings failed", error)
+                binding.messageText.setText(R.string.settings_save_failed)
                 binding.messageText.isVisible = true
             } finally {
                 binding.saveButton.isEnabled = true
@@ -138,9 +139,10 @@ class SettingsFragment : Fragment() {
                     Intent.createChooser(intent, getString(R.string.export_chooser)),
                 )
             } catch (error: Exception) {
+                Log.e(javaClass.simpleName, "Exporting failed", error)
                 Toast.makeText(
                     requireContext(),
-                    error.localizedMessage ?: getString(R.string.generic_failure),
+                    getString(R.string.export_failed),
                     Toast.LENGTH_LONG,
                 ).show()
             } finally {

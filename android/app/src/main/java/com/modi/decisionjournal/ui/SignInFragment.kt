@@ -1,6 +1,7 @@
 package com.modi.decisionjournal.ui
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -85,7 +86,8 @@ class SignInFragment : Fragment() {
             if (!isAdded) return@addOnCompleteListener
             setBusy(false)
             if (!result.isSuccessful) {
-                showError(result.exception?.localizedMessage ?: getString(R.string.sign_in_failed))
+                Log.e(javaClass.simpleName, "Email sign-in failed", result.exception)
+                showError(getString(R.string.sign_in_failed))
             }
             // Success is handled by MainActivity's auth-state listener.
         }
@@ -122,9 +124,11 @@ class SignInFragment : Fragment() {
             } catch (_: GetCredentialCancellationException) {
                 // The account picker was dismissed; nothing to report.
             } catch (error: GetCredentialException) {
-                showError(error.message ?: getString(R.string.google_sign_in_failed))
+                Log.e(javaClass.simpleName, "Google sign-in failed", error)
+                showError(getString(R.string.google_sign_in_failed))
             } catch (error: Exception) {
-                showError(error.localizedMessage ?: getString(R.string.google_sign_in_failed))
+                Log.e(javaClass.simpleName, "Google sign-in failed", error)
+                showError(getString(R.string.google_sign_in_failed))
             } finally {
                 if (_binding != null) setBusy(false)
             }

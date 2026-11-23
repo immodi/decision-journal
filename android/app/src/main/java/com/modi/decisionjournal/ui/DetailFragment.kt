@@ -1,6 +1,7 @@
 package com.modi.decisionjournal.ui
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -160,7 +161,8 @@ class DetailFragment : Fragment() {
             try {
                 repository.postpone(decisionId, date)
             } catch (error: Exception) {
-                toast(error.localizedMessage ?: getString(R.string.generic_failure))
+                Log.e(javaClass.simpleName, "Postponing failed", error)
+                toast(getString(R.string.postpone_failed))
             }
         }
     }
@@ -181,7 +183,8 @@ class DetailFragment : Fragment() {
                 repository.delete(decisionId)
                 (activity as? MainActivity)?.openHome()
             } catch (error: Exception) {
-                toast(error.localizedMessage ?: getString(R.string.generic_failure))
+                Log.e(javaClass.simpleName, "Deleting failed", error)
+                toast(getString(R.string.delete_failed))
             }
         }
     }

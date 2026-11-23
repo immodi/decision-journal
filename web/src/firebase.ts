@@ -1,6 +1,7 @@
 import { initializeApp } from 'firebase/app';
-import { getAuth, type Auth } from 'firebase/auth';
+import { connectAuthEmulator, getAuth, type Auth } from 'firebase/auth';
 import {
+  connectFirestoreEmulator,
   initializeFirestore,
   persistentLocalCache,
   persistentMultipleTabManager,
@@ -25,6 +26,13 @@ export const auth: Auth = getAuth(app);
 export const db: Firestore = initializeFirestore(app, {
   localCache: persistentLocalCache({ tabManager: persistentMultipleTabManager() }),
 });
+
+// Local development against `firebase emulators:start` (see README).
+const useEmulator = import.meta.env.VITE_USE_EMULATOR === 'true';
+if (useEmulator) {
+  connectAuthEmulator(auth, 'http://127.0.0.1:9099', { disableWarnings: true });
+  connectFirestoreEmulator(db, '127.0.0.1', 8081);
+}
 
 // The Google button is hidden until the provider is enabled and this is set.
 export const googleSignInEnabled: boolean = import.meta.env.VITE_GOOGLE_SIGN_IN === 'true';

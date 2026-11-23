@@ -144,6 +144,14 @@
 
     <string name="reminder_channel_name">Review reminders</string>
     <string name="reminder_channel_description">One daily check for decisions that are due.</string>
+    <string name="test_notification">Send a test notification</string>
+    <string name="open_notification_settings">Open notification settings</string>
+    <string name="test_notification_body">Notifications are working. The daily check runs at your reminder time.</string>
+    <string name="notify_status_on">Notifications are on. The daily check runs at %1$s.</string>
+    <string name="notify_status_off">Notifications are off, so reminders cannot be shown.</string>
+    <string name="test_sent">Test notification sent.</string>
+    <string name="test_sent_none">Test sent. Nothing is due right now.</string>
+    <string name="test_sent_due">Test sent. %1$d due.</string>
     <plurals name="reminder_due">
         <item quantity="one">%d decision is ready for review</item>
         <item quantity="other">%d decisions are ready for review</item>

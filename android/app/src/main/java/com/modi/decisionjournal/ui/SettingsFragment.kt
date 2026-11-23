@@ -1,7 +1,10 @@
 package com.modi.decisionjournal.ui
 
 import android.content.Intent
+import android.net.Uri
+import android.os.Build
 import android.os.Bundle
+import android.provider.Settings
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -15,10 +18,12 @@ import com.google.android.material.timepicker.MaterialTimePicker
 import com.google.android.material.timepicker.TimeFormat
 import com.google.firebase.auth.FirebaseAuth
 import com.modi.decisionjournal.R
+import com.modi.decisionjournal.data.DecisionRepository
 import com.modi.decisionjournal.data.Preferences
 import com.modi.decisionjournal.data.Repositories
 import com.modi.decisionjournal.data.currentUid
 import com.modi.decisionjournal.databinding.FragmentSettingsBinding
+import com.modi.decisionjournal.reminders.NotificationHelper
 import com.modi.decisionjournal.reminders.ReminderScheduler
 import kotlinx.coroutines.launch
 import java.io.File
@@ -50,12 +55,15 @@ class SettingsFragment : Fragment() {
             FirebaseAuth.getInstance().currentUser?.email ?: "—",
         )
 
+        val repository = Repositories.decisions(checkNotNull(currentUid()))
+
         binding.reminderTimeButton.setOnClickListener { pickTime() }
         binding.saveButton.setOnClickListener { save() }
         binding.exportButton.setOnClickListener { export() }
         binding.signOutButton.setOnClickListener { FirebaseAuth.getInstance().signOut() }
+        binding.testNotificationButton.setOnClickListener { sendTestNotification(repository) }
+        updateNotificationStatus()
 
-        val repository = Repositories.decisions(checkNotNull(currentUid()))
         viewLifecycleOwner.lifecycleScope.launch {
             runCatching { repository.loadPreferences() }.onSuccess { preferences ->
                 if (loaded) return@onSuccess
@@ -63,8 +71,14 @@ class SettingsFragment : Fragment() {
                 binding.defaultDaysInput.setText(preferences.defaultReviewDays.toString())
                 reminderTime = preferences.reminderTime
                 binding.reminderTimeButton.text = reminderTime
+                updateNotificationStatus()
             }
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        if (_binding != null) updateNotificationStatus()
     }
 
     override fun onDestroyView() {
@@ -87,8 +101,52 @@ class SettingsFragment : Fragment() {
         picker.addOnPositiveButtonClickListener {
             reminderTime = "%02d:%02d".format(picker.hour, picker.minute)
             binding.reminderTimeButton.text = reminderTime
+            updateNotificationStatus()
         }
         picker.show(childFragmentManager, "reminder-time")
+    }
+
+    private fun updateNotificationStatus() {
+        val enabled = NotificationHelper.notificationsEnabled(requireContext())
+        binding.notificationStatus.text = if (enabled) {
+            getString(R.string.notify_status_on, reminderTime)
+        } else {
+            getString(R.string.notify_status_off)
+        }
+        binding.testNotificationButton.setText(
+            if (enabled) R.string.test_notification else R.string.open_notification_settings,
+        )
+    }
+
+    private fun sendTestNotification(repository: DecisionRepository) {
+        if (!NotificationHelper.notificationsEnabled(requireContext())) {
+            openNotificationSettings()
+            return
+        }
+
+        NotificationHelper.showTestNotification(requireContext())
+        viewLifecycleOwner.lifecycleScope.launch {
+            val due = runCatching { repository.dueCount() }.getOrNull()
+            val message = when {
+                due == null -> getString(R.string.test_sent)
+                due == 0 -> getString(R.string.test_sent_none)
+                else -> getString(R.string.test_sent_due, due)
+            }
+            Toast.makeText(requireContext(), message, Toast.LENGTH_LONG).show()
+        }
+    }
+
+    private fun openNotificationSettings() {
+        val intent = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS)
+                .putExtra(Settings.EXTRA_APP_PACKAGE, requireContext().packageName)
+        } else {
+            Intent(
+                Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
+                Uri.parse("package:${requireContext().packageName}"),
+            )
+        }
+        runCatching { startActivity(intent) }
     }
 
     private fun save() {

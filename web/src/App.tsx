@@ -3,6 +3,7 @@ import { Link, NavLink, Navigate, Outlet, Route, Routes } from 'react-router-dom
 import { useAuth } from './hooks/useAuth';
 import { DecisionsProvider, useDecisions } from './hooks/useDecisions';
 import { isOverdue, sortByReviewDate } from './lib/decisions';
+import ThemeToggle from './components/ThemeToggle';
 import SignIn from './pages/SignIn';
 import Home from './pages/Home';
 import NewDecision from './pages/NewDecision';
@@ -42,22 +43,28 @@ function Layout() {
 export default function App() {
   const { user, ready } = useAuth();
 
-  if (!ready) return <p className="centre muted">Loading…</p>;
-  if (!user) return <SignIn />;
-
   return (
-    <DecisionsProvider uid={user.uid}>
-      <Routes>
-        <Route element={<Layout />}>
-          <Route index element={<Home />} />
-          <Route path="new" element={<NewDecision />} />
-          <Route path="decisions/:id" element={<DecisionDetail />} />
-          <Route path="decisions/:id/review" element={<Review />} />
-          <Route path="insights" element={<Insights />} />
-          <Route path="settings" element={<Settings />} />
-          <Route path="*" element={<Navigate to="/" replace />} />
-        </Route>
-      </Routes>
-    </DecisionsProvider>
+    <>
+      {!ready ? (
+        <p className="centre muted">Loading…</p>
+      ) : user ? (
+        <DecisionsProvider uid={user.uid}>
+          <Routes>
+            <Route element={<Layout />}>
+              <Route index element={<Home />} />
+              <Route path="new" element={<NewDecision />} />
+              <Route path="decisions/:id" element={<DecisionDetail />} />
+              <Route path="decisions/:id/review" element={<Review />} />
+              <Route path="insights" element={<Insights />} />
+              <Route path="settings" element={<Settings />} />
+              <Route path="*" element={<Navigate to="/" replace />} />
+            </Route>
+          </Routes>
+        </DecisionsProvider>
+      ) : (
+        <SignIn />
+      )}
+      <ThemeToggle />
+    </>
   );
 }

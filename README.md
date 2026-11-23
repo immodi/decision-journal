@@ -40,6 +40,37 @@ Config files:
   and deployed locally.
 - `android/keystore/` and `android/keystore.properties` are never committed.
 
+## Trying it with test data
+
+Use the emulator for iteration; production stays untouched.
+
+```bash
+cd firebase
+npm run emulators      # Firestore :8081, Auth :9099
+```
+
+In another terminal:
+
+```bash
+cd firebase
+npm run seed           # resets emulator data, creates demo@example.com / demo-password
+```
+
+Point the web client at the emulator with a local overrides file, `web/.env.local`:
+
+```bash
+VITE_USE_EMULATOR=true
+VITE_FIREBASE_PROJECT_ID=demo-decision-journal
+```
+
+Then `npm run dev` from `web/`. The seed creates 18 decisions — 10 reviewed, 4 due,
+3 upcoming and 1 postponed — so every screen and the insights tables have data.
+Remove the file to go back to the real project. Each seed run wipes emulator
+state first, and the script refuses to run against a non-`demo-` project.
+
+Android runs against the real project only; test it with a dedicated account
+rather than by editing production data.
+
 ## Web client
 
 ```bash

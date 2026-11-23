@@ -95,10 +95,12 @@ compile/target SDK 35.
 Screens: sign in / register, Home (due + recent, tag and status filters),
 new decision, detail (edit, postpone, delete), review, insights, settings.
 
-Reminders: one WorkManager check per day at the saved reminder time. On
-Android 13+ the notification permission is requested at launch; the
-notification is posted only when at least one open decision is due. WorkManager
-timing is approximate.
+Reminders: one AlarmManager alarm per day at the saved reminder time, delivered
+by a broadcast receiver. On Android 13+ the notification permission is
+requested at launch; a notification is posted only when at least one open
+decision is due. Exact alarms need the “Alarms & reminders” permission on
+Android 12+; otherwise the alarm is inexact and may run a few minutes late.
+Settings shows the time of the last check.
 
 Google sign-in uses Credential Manager with the project's web client ID
 (`google_web_client_id` in `strings.xml`). The provider is enabled on the

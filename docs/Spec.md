@@ -22,7 +22,7 @@ Design principles:
 ## 3. Tech stack
 
 - **Backend:** Firebase Authentication and Cloud Firestore on the free (Spark) plan. No custom server and no Cloud Functions in v1.
-- **Android:** Kotlin, minimum SDK 24, Material Components, ViewBinding, ViewModel with LiveData, coroutines for the Firebase calls, Firebase Android SDK (via the Firebase BoM and the Kotlin extensions), Credential Manager for the optional Google sign-in, WorkManager for reminders.
+- **Android:** Kotlin, minimum SDK 24, Material Components, ViewBinding, ViewModel with LiveData, coroutines for the Firebase calls, Firebase Android SDK (via the Firebase BoM and the Kotlin extensions), Credential Manager for the optional Google sign-in, AlarmManager for reminders.
 - **Web:** React with Vite and TypeScript, Tailwind CSS, React Router, Firebase JS SDK (modular API), and any lightweight charting library (for example Recharts).
 
 Both clients talk directly to Firebase. That means the Firestore security rules in section 5 are the only thing protecting the data, so they must be written and deployed before any real entries are stored.
@@ -216,11 +216,12 @@ Reminder time, default review period, export all data as JSON (required on web, 
 
 ## 7. Reminders
 
-**Android.** One daily check at the user’s `reminderTime`, run with WorkManager periodic work. It queries for open decisions whose `reviewDate` has passed and, if there are any, posts a single notification such as “3 decisions are ready for review”. Tapping it opens the Home screen. Details:
+**Android.** One daily check at the user’s `reminderTime`. An `AlarmManager` alarm — exact when the OS permits it, inexact otherwise — starts a broadcast receiver that queries for open decisions whose `reviewDate` has passed and, if there are any, posts a single notification such as “3 decisions are ready for review”. Tapping it opens the Home screen. Details:
 
 - Request the notification permission on Android 13 and later.
-- Reschedule the work when the reminder time changes and after sign-in.
-- WorkManager timing is approximate, which is acceptable here.
+- Re-arm the alarm after each run, after a reboot, when the reminder time changes and after sign-in.
+- Exact alarms need the “Alarms & reminders” permission on Android 12+; without it the alarm is inexact and may run a few minutes late.
+- Settings shows when the last check ran, so a delayed or blocked alarm is visible.
 
 **Web.** No push notifications in v1. Instead, show a count badge for decisions due in the header and in the browser tab title, for example “(2) Decision Journal”.
 
@@ -239,7 +240,7 @@ Use one repository with three top-level folders:
 - `/android`: the Kotlin app
 - `/web`: the React app
 
-**Android layout.** Packages for `ui` (activities and fragments), `data` (the `Decision` model and a repository wrapping Firestore and exposing LiveData), and `reminders` (the WorkManager worker). The `Decision` model is a plain Kotlin data class with a public no-argument constructor and writable properties so Firestore can map it, with `@ServerTimestamp` on the server-set fields.
+**Android layout.** Packages for `ui` (activities and fragments), `data` (the `Decision` model and a repository wrapping Firestore and exposing LiveData), and `reminders` (the alarm receiver and scheduler). The `Decision` model is a plain Kotlin data class with a public no-argument constructor and writable properties so Firestore can map it, with `@ServerTimestamp` on the server-set fields.
 
 **Web layout.** `src/firebase.ts` for initialisation, `src/hooks/useDecisions.tsx` for the data hook and its provider, `src/types.ts` for the shared `Decision` and `Review` types, `src/pages/` for screens, and `src/components/` for shared pieces. Tailwind is configured through `vite.config.ts` and `src/index.css`; shared utility classes live in `src/components/ui.ts`. Run `npm run typecheck` before deploying.
 

@@ -1,0 +1,82 @@
+@import "tailwindcss";
+
+/* The theme is applied by an inline script in index.html before first paint. */
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
+
+@theme inline {
+  --color-paper: var(--paper);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-ink: var(--ink);
+  --color-muted: var(--muted);
+  --color-line: var(--line);
+  --color-accent: var(--accent);
+  --color-accent-strong: var(--accent-strong);
+  --color-accent-soft: var(--accent-soft);
+  --color-accent-ink: var(--accent-ink);
+  --color-warn: var(--warn);
+  --color-warn-soft: var(--warn-soft);
+  --color-danger: var(--danger);
+  --color-danger-soft: var(--danger-soft);
+}
+
+:root {
+  --paper: #f7f4ee;
+  --surface: #fffdf9;
+  --surface-2: #f0ece4;
+  --ink: #1c1e21;
+  --muted: #6f7379;
+  --line: #e5dfd3;
+  --accent: #2f5d50;
+  --accent-strong: #244a3f;
+  --accent-soft: #e4efe9;
+  --accent-ink: #ffffff;
+  --warn: #9a5f1e;
+  --warn-soft: #fbeddb;
+  --danger: #a33b3b;
+  --danger-soft: #f8e4e4;
+  color-scheme: light;
+}
+
+:root[data-theme="dark"] {
+  --paper: #101215;
+  --surface: #171a1e;
+  --surface-2: #20252b;
+  --ink: #eae8e2;
+  --muted: #a2a8ae;
+  --line: #2b3138;
+  --accent: #93c9b7;
+  --accent-strong: #b3ddce;
+  --accent-soft: #1f332c;
+  --accent-ink: #0d1f19;
+  --warn: #e0a670;
+  --warn-soft: #33271a;
+  --danger: #e39494;
+  --danger-soft: #3a2222;
+  color-scheme: dark;
+}
+
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    min-height: 100vh;
+    color: var(--ink);
+    background:
+      radial-gradient(
+        1100px 520px at 88% -12%,
+        color-mix(in srgb, var(--accent) 9%, transparent),
+        transparent 60%
+      ),
+      var(--paper);
+    font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  ::selection {
+    background: var(--accent-soft);
+    color: var(--accent);
+  }
+}

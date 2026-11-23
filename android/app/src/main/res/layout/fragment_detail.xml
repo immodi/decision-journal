@@ -319,12 +319,13 @@
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/deleteButton"
-                style="@style/Widget.Material3.Button.TextButton"
-                android:layout_width="wrap_content"
+                style="@style/Widget.Material3.Button.OutlinedButton"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
+                android:layout_marginTop="8dp"
                 android:text="@string/delete"
-                android:textColor="?attr/colorError" />
+                android:textColor="?attr/colorError"
+                app:strokeColor="?attr/colorError" />
         </LinearLayout>
 
     </LinearLayout>

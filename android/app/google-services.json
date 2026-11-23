@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "534326115440",
+    "project_id": "decision-journal-97da7",
+    "storage_bucket": "decision-journal-97da7.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:534326115440:android:663953bdc90397bda888b5",
+        "android_client_info": {
+          "package_name": "com.modi.decisionjournal"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "534326115440-oru1t1nu9gkcumnnsvs7fgh7cm67l1gg.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCqqoPSxV2B3qcfPeEwcHCOBE9jpqVreCA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "534326115440-oru1t1nu9gkcumnnsvs7fgh7cm67l1gg.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

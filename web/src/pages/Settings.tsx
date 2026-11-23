@@ -4,6 +4,15 @@ import { Timestamp } from 'firebase/firestore';
 import { auth } from '../firebase';
 import { useDecisions } from '../hooks/useDecisions';
 import { useSettings } from '../hooks/useSettings';
+import {
+  buttonPrimary,
+  buttonSecondary,
+  card,
+  field,
+  hint,
+  input,
+  mutedText,
+} from '../components/ui';
 
 // Firestore Timestamps do not survive JSON.stringify usefully, so export ISO strings.
 function serialise(value: unknown): unknown {
@@ -65,57 +74,77 @@ export default function Settings() {
   }
 
   return (
-    <>
-      <h1>Settings</h1>
+    <div className="mx-auto max-w-2xl space-y-6">
+      <header>
+        <h1 className="text-2xl font-semibold tracking-tight">Settings</h1>
+        <p className={mutedText}>Reminders, defaults and your data.</p>
+      </header>
 
-      <form className="stack" onSubmit={submit}>
-        <label className="field">
+      <form className={`${card} grid gap-5 p-6`} onSubmit={submit}>
+        <label className={field}>
           Reminder time
-          <span className="hint">
+          <span className={hint}>
             Used by the Android daily check. The web client shows a due count instead of notifying.
           </span>
           <input
             type="time"
+            className={input}
             value={reminderTime}
             onChange={(event) => setReminderTime(event.target.value)}
           />
         </label>
 
-        <label className="field">
+        <label className={field}>
           Default review period
-          <span className="hint">Days from today when creating a decision.</span>
+          <span className={hint}>Days from today when creating a decision.</span>
           <input
             type="number"
             min="1"
             max="365"
+            className={input}
             value={defaultReviewDays}
             onChange={(event) => setDefaultReviewDays(Number(event.target.value))}
           />
         </label>
 
-        {message && <p className="muted small">{message}</p>}
-        {error && <p className="error">{error}</p>}
+        {message && <p className={mutedText}>{message}</p>}
+        {error && <p className="text-sm text-danger">{error}</p>}
 
-        <div className="actions end">
-          <button type="submit" className="button primary" disabled={busy}>
+        <div className="flex justify-end border-t border-line pt-5">
+          <button type="submit" className={buttonPrimary} disabled={busy}>
             {busy ? 'Saving…' : 'Save settings'}
           </button>
         </div>
       </form>
 
-      <h2>Data</h2>
-      <p className="muted small">
-        The free plan has no managed backups. Export a copy now and then.
-      </p>
-      <button type="button" className="button" onClick={exportJson} disabled={decisions.length === 0}>
-        Export all data as JSON
-      </button>
+      <section className={`${card} p-6`}>
+        <h2 className="text-lg font-semibold tracking-tight">Data</h2>
+        <p className={`${mutedText} mt-1`}>
+          The free plan has no managed backups. Export a copy now and then.
+        </p>
+        <button
+          type="button"
+          className={`${buttonSecondary} mt-4`}
+          onClick={exportJson}
+          disabled={decisions.length === 0}
+        >
+          Export all data as JSON
+        </button>
+      </section>
 
-      <h2>Account</h2>
-      <p className="muted small">Signed in as {auth.currentUser?.email ?? 'unknown'}.</p>
-      <button type="button" className="button" onClick={() => void signOut(auth)}>
-        Sign out
-      </button>
-    </>
+      <section className={`${card} p-6`}>
+        <h2 className="text-lg font-semibold tracking-tight">Account</h2>
+        <p className={`${mutedText} mt-1`}>
+          Signed in as {auth.currentUser?.email ?? 'unknown'}.
+        </p>
+        <button
+          type="button"
+          className={`${buttonSecondary} mt-4`}
+          onClick={() => void signOut(auth)}
+        >
+          Sign out
+        </button>
+      </section>
+    </div>
   );
 }

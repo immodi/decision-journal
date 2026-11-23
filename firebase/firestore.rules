@@ -1,0 +1,62 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isOwner(userId) {
+      return request.auth != null && request.auth.uid == userId;
+    }
+
+    // A reviewed decision may only differ from the open one by these keys:
+    // the status flip, the review map being added, and updatedAt.
+    function reviewTransitionOnly() {
+      return request.resource.data.diff(resource.data)
+               .affectedKeys()
+               .hasOnly(['status', 'review', 'updatedAt']);
+    }
+
+    match /users/{userId}/decisions/{decisionId} {
+      allow read: if isOwner(userId);
+
+      // Deleting is only for mistakes made while the decision is still open.
+      // A reviewed decision is a permanent record.
+      allow delete: if isOwner(userId) && resource.data.status == 'open';
+
+      allow create: if isOwner(userId)
+                    && request.resource.data.keys().hasAll(['title', 'prediction', 'confidence', 'reviewDate'])
+                    && request.resource.data.status == 'open'
+                    && request.resource.data.review == null
+                    && request.resource.data.postponedAt == null
+                    && request.resource.data.createdAt == request.time
+                    && request.resource.data.updatedAt == request.time
+                    && request.resource.data.confidence is int
+                    && request.resource.data.confidence >= 0
+                    && request.resource.data.confidence <= 100;
+
+      // Only open decisions can be edited. The review date can move only as
+      // part of the one postponement, and a set postponedAt cannot be cleared.
+      allow update: if isOwner(userId)
+                    && resource.data.status == 'open'
+                    && request.resource.data.createdAt == resource.data.createdAt
+                    && request.resource.data.updatedAt == request.time
+                    && (
+                         (request.resource.data.status == 'open'
+                          && request.resource.data.review == null
+                          && (resource.data.postponedAt == null
+                              || request.resource.data.postponedAt == resource.data.postponedAt)
+                          && (request.resource.data.reviewDate == resource.data.reviewDate
+                              || (resource.data.postponedAt == null
+                                  && request.resource.data.postponedAt != null)))
+                         ||
+                         (request.resource.data.status == 'reviewed'
+                          && request.resource.data.review != null
+                          && request.resource.data.review.predictionResult in ['yes', 'partly', 'no']
+                          && request.resource.data.review.reasoningRating in ['sound', 'flawed', 'unsure']
+                          && reviewTransitionOnly())
+                       );
+    }
+
+    match /users/{userId}/settings/{documentId} {
+      allow read, write: if isOwner(userId);
+    }
+  }
+}
